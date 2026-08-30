@@ -24,19 +24,13 @@ import { TradePlanCard } from "@/components/trade-plan-card";
 import { useBrand } from "@/components/brand-provider";
 
 const METRIC_KEY_LABELS: Record<string, string> = {
-  returnPct: "Return %",
-  totalR: "Total R",
-  totalPnl: "Net P&L",
-  winRate: "Win Rate",
-  profitFactor: "Profit Factor",
-  expectancyR: "Avg R",
-  tradeCount: "Trades",
-  maxDrawdownR: "Max Drawdown",
   tradePlan: "📋 Trading Plan",
   notes: "💡 Notes",
 };
 
-const METRIC_KEYS = Object.keys(METRIC_KEY_LABELS) as Array<keyof typeof METRIC_KEY_LABELS | "tradePlan" | "notes">;
+const METRIC_KEYS = Object.keys(METRIC_KEY_LABELS) as Array<
+  keyof typeof METRIC_KEY_LABELS | "tradePlan" | "notes"
+>;
 
 type HeadlineKey = "returnPct" | "totalR" | "totalPnl";
 
@@ -109,14 +103,6 @@ export default function TradeSharePage({
   const [scale, setScale] = React.useState(0.5);
   const [headline, setHeadline] = React.useState<HeadlineKey>("totalR");
   const [enabled, setEnabled] = React.useState<Record<string, boolean>>({
-    returnPct: true,
-    totalR: true,
-    totalPnl: true,
-    winRate: true,
-    profitFactor: true,
-    expectancyR: true,
-    tradeCount: true,
-    maxDrawdownR: true,
     tradePlan: true,
     notes: true,
   });
@@ -454,12 +440,12 @@ function TradeLayout({
     };
   })();
 
-  const headlineVisible = enabled[headline];
+  const headlineVisible = true;
   const footerText =
     trade.result === "WIN"
-      ? "WINNER"
+      ? "WIN"
       : trade.result === "LOSS"
-        ? "LOSER"
+        ? "LOSS"
         : "BREAKEVEN";
   const footerPositive = trade.result === "WIN";
 
@@ -476,7 +462,7 @@ function TradeLayout({
             {/* Header */}
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <div className="text-base font-semibold uppercase tracking-[0.2em] text-slate-500">
                   {brandName}
                 </div>
                 <div
@@ -490,13 +476,6 @@ function TradeLayout({
                 <div className="mt-2 text-xl font-semibold text-slate-300">
                   {layoutTitle}
                   {accountName ? ` · ${accountName}` : ""}
-                </div>
-                <div className="mt-1 text-sm text-slate-400">
-                  {closedDate.toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
                 </div>
               </div>
               <ShareBrandBadge logoUrl={trade.account?.logo} alt={accountName ?? "Prop firm"} />
@@ -599,7 +578,7 @@ function TradeLayout({
                 })}
               </span>
               <span className="text-slate-400 tabular-nums">
-                WIN / LOSS · {formatR(m.totalR)}
+                {footerText} · {formatR(m.totalR)}
               </span>
             </div>
 
