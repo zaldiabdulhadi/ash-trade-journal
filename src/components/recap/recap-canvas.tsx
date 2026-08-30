@@ -22,6 +22,7 @@ import {
 } from "@/lib/constants";
 import { ShareBackdrop } from "@/components/trade-share-card";
 import { ShareBrandBadge } from "@/components/share-brand";
+import { useBrand } from "@/components/brand-provider";
 
 export interface RecapMetrics {
   totalR: number;
@@ -44,6 +45,14 @@ export interface RecapDaily {
   count: number;
 }
 
+export interface RecapTradeRow {
+  symbol: string;
+  direction: "LONG" | "SHORT";
+  r: number | null;
+  pnl: number | null;
+  result: "WIN" | "LOSS" | "BREAKEVEN";
+}
+
 export interface RecapPayload {
   type: "daily" | "weekly" | "monthly";
   title: string;
@@ -56,6 +65,7 @@ export interface RecapPayload {
   best: { symbol: string; r: number; pnl: number } | null;
   worst: { symbol: string; r: number; pnl: number } | null;
   daily: RecapDaily[];
+  trades: RecapTradeRow[];
 }
 
 const METRIC_KEY_LABELS: Record<string, string> = {
@@ -286,6 +296,7 @@ function CleanLayout({
   landscape: boolean;
 }) {
   const m = payload.metrics;
+  const { brandName } = useBrand();
 
   const headlineInfo = (() => {
     if (headline === "returnPct") {
@@ -307,13 +318,11 @@ function CleanLayout({
   })();
 
   const headlineVisible = enabled[headline];
-  const showR = enabled.totalR;
-  const showPnl = enabled.totalPnl;
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
-      {/* Subtle dark gradient — removed aurora blur that occluded mini calendar */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800" />
+      {/* Aesthetic gradient + decorative lines, same style as trade share card */}
+      <ShareBackdrop positive={m.totalPnl >= 0} />
 
       <div
         className={cn(
@@ -360,29 +369,6 @@ function CleanLayout({
                 )}
               >
                 {headlineInfo.value}
-              </div>
-            )}
-            {(showR || showPnl) && (
-              <div
-                className={cn(
-                  "flex items-center gap-5 font-semibold text-slate-300",
-                  landscape ? "mt-3 text-2xl" : "mt-4 text-3xl"
-                )}
-              >
-                {showR && (
-                  <span
-                    className={cn(m.totalR >= 0 ? "text-emerald-300/90" : "text-rose-300/90")}
-                  >
-                    {formatR(m.totalR)}
-                  </span>
-                )}
-                {showPnl && (
-                  <span
-                    className={cn(m.totalPnl >= 0 ? "text-emerald-300/90" : "text-rose-300/90")}
-                  >
-                    {formatPnl(m.totalPnl, payload.currency)}
-                  </span>
-                )}
               </div>
             )}
           </div>
@@ -514,6 +500,49 @@ function CleanLayout({
             {m.wins}W · {m.losses}L · {m.tradeCount - m.wins - m.losses}BE
           </span>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function TradeHistory({
+  trades,
+  currency,
+}: {
+  trades: RecapTradeRow[];
+  currency: string;
+}) {
+  return (
+    <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white/[0.05] ring-1 ring-white/10">
+      <div className="flex items-center justify-between px-5 pt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+        <span>Trade History</span>
+        <span className="tabular-nums text-slate-500">{trades.length} trades</span>
+      </div>
+      <div className="min-h-0 flex-1 space-y-1.5 overflow-hidden px-5 py-3">
+        {trades.map((t, i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between gap-3 rounded-lg bg-black/20 px-3 py-2 ring-1 ring-white/5"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold text-slate-200">
+              <span className="text-slate-500">
+                {t.direction === "LONG" ? "▲" : "▼"}
+              </span>
+              {t.symbol}
+            </span>
+            <span className="text-xs uppercase tracking-wide text-slate-500">
+              {t.result}
+            </span>
+            <span
+              className={cn(
+                "text-sm font-semibold tabular-nums",
+                (t.r ?? 0) >= 0 ? "text-emerald-400" : "text-rose-400"
+              )}
+            >
+              {formatR(t.r ?? 0)} · {formatPnl(t.pnl ?? 0, currency)}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -173,6 +173,13 @@ export default async function RecapPage({
       ? { symbol: worst.symbol, r: worst.rMultiple ?? 0, pnl: worst.pnl ?? 0 }
       : null,
     daily,
+    trades: filtered.map((t) => ({
+      symbol: t.symbol,
+      direction: t.direction,
+      r: t.rMultiple,
+      pnl: t.pnl,
+      result: t.result ?? "WIN",
+    })),
   };
 
   const baseParams = new URLSearchParams({ account: accountScope, month: monthParam });
