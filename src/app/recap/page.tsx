@@ -101,6 +101,18 @@ export default async function RecapPage({
 
   const dailyAggs = new Map(aggregateByDay(filtered).map((a) => [a.key, a]));
   const daily = (() => {
+    if (typeValue === "daily") {
+      const d = anchor;
+      const a = dailyAggs.get(dayKey(d));
+      return [
+        {
+          label: WEEKDAYS_SHORT[d.getDay()],
+          r: a?.r ?? 0,
+          pnl: a?.pnl ?? 0,
+          count: a?.count ?? 0,
+        },
+      ];
+    }
     if (typeValue === "weekly") {
       return Array.from({ length: 7 }, (_, i) => {
         const d = addDays(rangeStart, i);

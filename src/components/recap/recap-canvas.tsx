@@ -323,6 +323,8 @@ function CleanLayout({
     <div className="relative flex h-full w-full flex-col overflow-hidden">
       {/* Aesthetic gradient + decorative lines, same style as trade share card */}
       <ShareBackdrop positive={m.totalPnl >= 0} />
+      {/* Dim the backdrop so the grid fades and day-by-day pops */}
+      <div className="absolute inset-0 bg-slate-950/40" />
 
       <div
         className={cn(
@@ -336,12 +338,12 @@ function CleanLayout({
             <div
               className={cn(
                 "font-semibold text-slate-200",
-                landscape ? "text-2xl" : "text-3xl"
+                landscape ? "text-3xl" : "text-4xl"
               )}
             >
-              {payload.periodLabel}
+              {brandName}
             </div>
-            <div className="mt-1 text-sm text-slate-400">
+            <div className="mt-1 text-base text-slate-400">
               {payload.accountName}
               {payload.provider ? ` · ${payload.provider}` : ""}
             </div>
@@ -486,8 +488,15 @@ function CleanLayout({
           )}
         </div>
 
-        {/* Day-by-day calendar */}
-        {payload.daily.length > 0 && (
+        {/* Trade history — daily only, above day by day */}
+        {payload.type === "daily" && payload.trades.length > 0 && (
+          <div className={cn("mt-6 shrink-0", landscape ? "max-h-36" : "max-h-44")}>
+            <TradeHistory trades={payload.trades} currency={payload.currency} />
+          </div>
+        )}
+
+        {/* Day-by-day calendar — weekly / monthly only */}
+        {payload.type !== "daily" && payload.daily.length > 0 && (
           <div className="mt-6 min-h-0 flex-1">
             <MiniCalendar days={payload.daily} compact={landscape} />
           </div>
@@ -586,21 +595,21 @@ function MiniCalendar({
         {days.map((d, i) => (
           <div
             key={i}
-            className="flex flex-col justify-between rounded-lg px-2.5 py-2 ring-1 ring-white/10"
+            className="flex flex-col justify-between rounded-lg bg-white/[0.07] px-2.5 py-2 ring-1 ring-white/25"
             style={cellBg(d.r, maxAbs)}
           >
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-xs font-semibold text-slate-100">
               {d.label}
             </span>
             <span
               className={cn(
-                "font-semibold tabular-nums",
-                !compact || weekly ? "text-lg" : "text-base",
+                "font-bold tabular-nums",
+                !compact || weekly ? "text-xl" : "text-lg",
                 d.count > 0
                   ? d.r >= 0
-                    ? "text-emerald-400"
-                    : "text-rose-400"
-                  : "text-slate-700"
+                    ? "text-emerald-300"
+                    : "text-rose-300"
+                  : "text-slate-500"
               )}
             >
               {d.count > 0 ? `${d.r >= 0 ? "+" : ""}${d.r.toFixed(1)}` : "·"}
@@ -614,10 +623,10 @@ function MiniCalendar({
 
 function cellBg(r: number, maxAbs: number): React.CSSProperties {
   if (r === 0) return {};
-  const a = 0.06 + (0.5 * Math.min(Math.abs(r), maxAbs)) / maxAbs;
+  const a = 0.12 + (0.5 * Math.min(Math.abs(r), maxAbs)) / maxAbs;
   return r > 0
-    ? { background: `rgba(52,211,153,${a})` }
-    : { background: `rgba(251,113,133,${a})` };
+    ? { background: `rgba(16,185,129,${a})` }
+    : { background: `rgba(244,63,94,${a})` };
 }
 
 function MetricTile({
@@ -632,13 +641,13 @@ function MetricTile({
   large?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-white/[0.07] px-4 py-4 ring-1 ring-white/10">
-      <div className="text-xs tracking-wide text-slate-400 uppercase">{label}</div>
+    <div className="rounded-xl bg-white/[0.10] px-4 py-4 ring-1 ring-white/20">
+      <div className="text-sm font-medium tracking-wide text-slate-200 uppercase">{label}</div>
       <div
         className={cn(
           "mt-1.5 font-bold leading-tight tabular-nums",
-          large ? "text-3xl" : "text-2xl",
-          positive === undefined ? "text-white" : positive ? "text-emerald-400" : "text-rose-400"
+          large ? "text-4xl" : "text-3xl",
+          positive === undefined ? "text-white" : positive ? "text-emerald-300" : "text-rose-300"
         )}
       >
         {value}
