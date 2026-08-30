@@ -329,7 +329,7 @@ function CleanLayout({
       <div
         className={cn(
           "relative z-10 flex h-full flex-col",
-          landscape ? "px-12 pt-8 pb-7" : "px-10 pt-8 pb-7"
+          landscape ? "px-10 pt-8 pb-6" : "px-10 pt-8 pb-7"
         )}
       >
         {/* Header */}
@@ -338,12 +338,12 @@ function CleanLayout({
             <div
               className={cn(
                 "font-semibold text-slate-200",
-                landscape ? "text-3xl" : "text-4xl"
+                landscape ? "text-4xl" : "text-4xl"
               )}
             >
               {brandName}
             </div>
-            <div className="mt-1 text-base text-slate-400">
+            <div className={cn("mt-1 text-slate-400", landscape ? "text-xl" : "text-base")}>
               {payload.accountName}
               {payload.provider ? ` · ${payload.provider}` : ""}
             </div>
@@ -359,14 +359,14 @@ function CleanLayout({
           )}
         >
           <div className="min-w-0">
-            <div className="text-base font-semibold uppercase tracking-[0.24em] text-slate-400">
+            <div className="text-lg font-semibold uppercase tracking-[0.24em] text-slate-300">
               {payload.title}
             </div>
             {headlineVisible && (
               <div
                 className={cn(
                   "mt-2 leading-none font-bold tabular-nums tracking-tight",
-                  landscape ? "text-[112px]" : "text-[96px]",
+                  landscape ? "text-[120px]" : "text-[96px]",
                   headlineInfo.positive ? "text-emerald-400" : "text-rose-400"
                 )}
               >
@@ -490,8 +490,8 @@ function CleanLayout({
 
         {/* Trade history — daily only, above day by day */}
         {payload.type === "daily" && payload.trades.length > 0 && (
-          <div className={cn("mt-6 shrink-0", landscape ? "max-h-36" : "max-h-44")}>
-            <TradeHistory trades={payload.trades} currency={payload.currency} />
+          <div className={cn("mt-6 shrink-0", landscape ? "max-h-44" : "max-h-44")}>
+            <TradeHistory trades={payload.trades} currency={payload.currency} large={landscape} />
           </div>
         )}
 
@@ -517,35 +517,38 @@ function CleanLayout({
 function TradeHistory({
   trades,
   currency,
+  large,
 }: {
   trades: RecapTradeRow[];
   currency: string;
+  large: boolean;
 }) {
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white/[0.05] ring-1 ring-white/10">
-      <div className="flex items-center justify-between px-5 pt-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl bg-white/[0.07] ring-1 ring-white/20">
+      <div className={cn("flex items-center justify-between px-6 font-semibold uppercase tracking-[0.22em] text-slate-300", large ? "pt-4 text-base" : "pt-3 text-xs")}>
         <span>Trade History</span>
         <span className="tabular-nums text-slate-500">{trades.length} trades</span>
       </div>
-      <div className="min-h-0 flex-1 space-y-1.5 overflow-hidden px-5 py-3">
+      <div className={cn("min-h-0 flex-1 space-y-2 overflow-hidden px-6", large ? "py-4" : "py-3")}>
         {trades.map((t, i) => (
           <div
             key={i}
-            className="flex items-center justify-between gap-3 rounded-lg bg-black/20 px-3 py-2 ring-1 ring-white/5"
+            className={cn("flex items-center justify-between gap-3 rounded-lg bg-black/20 px-4 ring-1 ring-white/5", large ? "py-3 text-xl" : "py-2 text-sm")}
           >
-            <span className="flex items-center gap-2 text-sm font-semibold text-slate-200">
-              <span className="text-slate-500">
+            <span className="flex items-center gap-2 font-semibold text-slate-100">
+              <span className="text-slate-400">
                 {t.direction === "LONG" ? "▲" : "▼"}
               </span>
               {t.symbol}
             </span>
-            <span className="text-xs uppercase tracking-wide text-slate-500">
+            <span className={cn("uppercase tracking-wide text-slate-400", large ? "text-base" : "text-xs")}>
               {t.result}
             </span>
             <span
               className={cn(
-                "text-sm font-semibold tabular-nums",
-                (t.r ?? 0) >= 0 ? "text-emerald-400" : "text-rose-400"
+                "font-semibold tabular-nums",
+                large ? "text-xl" : "text-sm",
+                (t.r ?? 0) >= 0 ? "text-emerald-300" : "text-rose-300"
               )}
             >
               {formatR(t.r ?? 0)} · {formatPnl(t.pnl ?? 0, currency)}
