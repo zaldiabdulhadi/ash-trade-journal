@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Share2, CalendarDays } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { CardShell, EmptyState } from "@/components/ui/card-shell";
 import { formatPnl, formatR, formatShortMoney } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
@@ -176,9 +176,9 @@ export function CalendarView({
               <ChevronRight />
             </Button>
           </div>
-          <Button variant="outline" size="sm" render={<Link href={`/recap?type=monthly&account=${accountScope}&month=${monthStr}`} />}>
-            <Share2 data-icon="inline-start" /> Share Month
-          </Button>
+          <Link href={`/recap?type=monthly&account=${accountScope}&month=${monthStr}`} className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
+              <Share2 data-icon="inline-start" /> Share Month
+            </Link>
         </div>
       </header>
 
@@ -222,14 +222,14 @@ export function CalendarView({
             }
           >
             <div className="space-y-3">
-              <div className="grid grid-cols-7 gap-2">
+              <div className="grid grid-cols-7 gap-1 sm:gap-2">
                 {Array.from({ length: 7 }, (_, i) => (
                   <div key={i} className="text-center text-[11px] font-medium text-muted-foreground uppercase">
                     {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-7 gap-2">
+              <div className="grid grid-cols-7 gap-1 sm:gap-2">
                 {daily.cells.map((cell, i) => {
                   if (!cell) return <div key={i} className="h-16 rounded-lg sm:h-24" />;
                   const key = dayKeyOf(cell);

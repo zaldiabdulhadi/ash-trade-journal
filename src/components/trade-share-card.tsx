@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { formatPnl, formatR } from "@/lib/formatters";
+import { ShareBrandBadge } from "@/components/share-brand";
 
 export interface TradeShareData {
   symbol: string;
@@ -16,6 +17,7 @@ export interface TradeShareData {
   date: Date;
   result: "WIN" | "LOSS" | "BREAKEVEN";
   accountName?: string;
+  logoUrl?: string | null;
 }
 
 interface TradeShareCardProps {
@@ -57,6 +59,146 @@ export function TradeShareCard({
   );
 }
 
+export function ShareBackdrop({ positive }: { positive: boolean }) {
+  return (
+    <div className="pointer-events-none absolute inset-0" aria-hidden>
+      {/* Base gradient */}
+      <div
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(155deg,#152040 0%,#0d1526 45%,#070b14 100%)" }}
+      />
+
+      {/* Decorative line art */}
+      <div className="absolute inset-0">
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 1080 1350"
+          preserveAspectRatio="none"
+          className="h-full w-full"
+        >
+          <defs>
+            <linearGradient id="shareTrendFill" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor={positive ? "#34d399" : "#fb7185"} stopOpacity="0" />
+              <stop offset="100%" stopColor={positive ? "#34d399" : "#fb7185"} stopOpacity="0.9" />
+            </linearGradient>
+          </defs>
+
+          {/* Contour waves */}
+          <path
+            d="M0 260 C 180 210, 360 320, 540 270 S 900 200, 1080 250"
+            fill="none"
+            stroke="rgba(255,255,255,0.14)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M0 470 C 220 420, 420 530, 640 480 S 900 400, 1080 450"
+            fill="none"
+            stroke="rgba(255,255,255,0.09)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M0 720 C 260 660, 500 790, 760 730 S 960 650, 1080 690"
+            fill="none"
+            stroke="rgba(255,255,255,0.11)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M0 1000 C 240 940, 520 1070, 800 1010 S 980 930, 1080 970"
+            fill="none"
+            stroke="rgba(255,255,255,0.09)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M0 1250 C 300 1190, 560 1300, 840 1240 S 1000 1170, 1080 1210"
+            fill="none"
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth="1.5"
+          />
+
+          {/* Diagonal hatch lines */}
+          <path d="M-80 900 L600 40" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+          <path d="M80 1100 L880 180" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+          <path d="M620 1330 L1080 760" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+          <path d="M-60 660 L380 220" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" />
+
+          {/* Trending sparkline (up on win, down on loss) */}
+          {positive ? (
+            <>
+              <polygon
+                points="0,1240 200,1170 400,1200 600,1050 820,950 1080,850 1080,1350 0,1350"
+                fill="url(#shareTrendFill)"
+              />
+              <polyline
+                points="0,1240 200,1170 400,1200 600,1050 820,950 1080,850"
+                fill="none"
+                stroke="rgba(52,211,153,0.55)"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </>
+          ) : (
+            <>
+              <polygon
+                points="0,840 200,930 400,890 600,1040 820,1120 1080,1210 1080,1350 0,1350"
+                fill="url(#shareTrendFill)"
+              />
+              <polyline
+                points="0,840 200,930 400,890 600,1040 820,1120 1080,1210"
+                fill="none"
+                stroke="rgba(251,113,133,0.55)"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </>
+          )}
+        </svg>
+      </div>
+
+      {/* Aurora glows (tinted by result) */}
+      <div
+        className={cn(
+          "absolute -top-44 -right-32 h-[560px] w-[560px] rounded-full blur-3xl",
+          positive ? "bg-emerald-500/20" : "bg-rose-500/20"
+        )}
+      />
+      <div className="absolute -bottom-48 -left-32 h-[640px] w-[640px] rounded-full bg-indigo-500/15 blur-3xl" />
+      <div
+        className={cn(
+          "absolute -top-24 -left-24 h-80 w-80 rounded-full blur-3xl",
+          positive ? "bg-teal-400/10" : "bg-orange-500/10"
+        )}
+      />
+
+      {/* Accent rings */}
+      <div className="absolute top-20 -right-24 h-64 w-64 rounded-full ring-1 ring-white/10" />
+      <div className="absolute top-[206px] -right-[52px] h-40 w-40 rounded-full ring-1 ring-white/10" />
+      <div className="absolute bottom-20 -left-16 h-72 w-72 rounded-full ring-1 ring-white/10" />
+
+      {/* Faint grid overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.7) 1px, transparent 1px)",
+          backgroundSize: "72px 72px",
+        }}
+      />
+
+      {/* Vignette */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 50% 12%, transparent 40%, rgba(0,0,0,0.35) 100%)",
+        }}
+      />
+    </div>
+  );
+}
+
 function TradeShareContent({ 
   data, 
   isLong,
@@ -68,11 +210,7 @@ function TradeShareContent({
 }) {
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
-      {/* Background Gradient */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(180deg,#0b0f14 0%,#0d1422 100%)" }}
-      />
+      <ShareBackdrop positive={positivePnl} />
 
       {/* Content Container */}
       <div className="relative z-10 flex h-full flex-col px-10 pt-8 pb-7">
@@ -91,9 +229,7 @@ function TradeShareContent({
           </div>
           
           {/* Brand Badge */}
-          <div className="rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold tracking-wide text-slate-200 uppercase ring-1 ring-white/10">
-            Ash Trade Journal
-          </div>
+          <ShareBrandBadge logoUrl={data.logoUrl} alt={data.accountName ?? "Prop firm"} />
         </div>
 
         {/* Hero */}

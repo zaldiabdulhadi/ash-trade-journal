@@ -3,10 +3,12 @@
 import * as React from "react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { Loader2, Palette, Moon, Sun, Monitor } from "lucide-react";
+import { Loader2, Palette, Moon, Sun, Monitor, Type } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { resetAllData } from "@/app/actions/accounts";
+import { updateBrandSettings } from "@/app/actions/settings";
 
 const THEME_OPTIONS = [
   { value: "dark", label: "Dark", icon: Moon },
@@ -53,6 +56,83 @@ export function SettingsAppearance() {
         </SelectContent>
       </Select>
     </div>
+  );
+}
+
+export function SettingsBranding({
+  initialBrandName,
+  initialBrandTagline,
+}: {
+  initialBrandName: string;
+  initialBrandTagline: string;
+}) {
+  const router = useRouter();
+  const [brandName, setBrandName] = React.useState(initialBrandName);
+  const [brandTagline, setBrandTagline] = React.useState(initialBrandTagline);
+  const [saving, setSaving] = React.useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!brandName.trim()) {
+      toast.error("Brand name is required");
+      return;
+    }
+    setSaving(true);
+    const fd = new FormData();
+    fd.set("brandName", brandName.trim());
+    fd.set("brandTagline", brandTagline.trim());
+    const res = await updateBrandSettings(fd);
+    setSaving(false);
+    if (res.ok) {
+      toast.success("Branding updated");
+      router.refresh();
+    } else {
+      toast.error(res.error ?? "Could not save branding");
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex items-center gap-3">
+        <span className="flex size-9 items-center justify-center rounded-lg bg-muted">
+          <Type className="size-4" />
+        </span>
+        <div>
+          <div className="text-sm font-medium">Journal branding</div>
+          <div className="text-xs text-muted-foreground">
+            Shown in the sidebar and on the top-right of share/recap cards.
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-1.5">
+          <Label htmlFor="brand-name">Brand name</Label>
+          <Input
+            id="brand-name"
+            value={brandName}
+            onChange={(e) => setBrandName(e.target.value)}
+            placeholder="Ash Trade Journal"
+            maxLength={60}
+          />
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="brand-tagline">Tagline</Label>
+          <Input
+            id="brand-tagline"
+            value={brandTagline}
+            onChange={(e) => setBrandTagline(e.target.value)}
+            placeholder="local · personal"
+            maxLength={40}
+          />
+        </div>
+      </div>
+      <div className="flex justify-end">
+        <Button type="submit" size="sm" disabled={saving}>
+          {saving && <Loader2 className="size-4 animate-spin" />}
+          Save branding
+        </Button>
+      </div>
+    </form>
   );
 }
 

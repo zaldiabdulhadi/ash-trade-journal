@@ -213,6 +213,53 @@ export function TradeForm({
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setState((s) => ({ ...s, [key]: value }));
 
+  const riskSource = React.useRef<"percent" | "amount">("percent");
+  const riskBalance = selectedAccount?.currentBalance ?? null;
+
+  const setRiskPercent = (v: string) => {
+    riskSource.current = "percent";
+    const pct = num(v);
+    if (pct != null && pct > 0 && riskBalance != null && riskBalance > 0) {
+      const amount = Math.round(riskBalance * pct) / 100;
+      setState((s) => ({ ...s, riskPercent: v, riskAmount: String(amount) }));
+    } else {
+      setState((s) => ({ ...s, riskPercent: v, riskAmount: "" }));
+    }
+  };
+
+  const setRiskAmount = (v: string) => {
+    riskSource.current = "amount";
+    const amount = num(v);
+    if (amount != null && amount > 0 && riskBalance != null && riskBalance > 0) {
+      const pct = Math.round(((amount / riskBalance) * 100) * 100) / 100;
+      setState((s) => ({ ...s, riskAmount: v, riskPercent: String(pct) }));
+    } else {
+      setState((s) => ({ ...s, riskAmount: v, riskPercent: "" }));
+    }
+  };
+
+  React.useEffect(() => {
+    setState((prev) => {
+      const bal = accounts.find((a) => a.id === prev.accountId)?.currentBalance ?? null;
+      if (bal == null || bal <= 0) return prev;
+      if (riskSource.current === "percent") {
+        const pct = num(prev.riskPercent);
+        if (pct != null && pct > 0) {
+          const amount = Math.round(bal * pct) / 100;
+          return { ...prev, riskAmount: String(amount) };
+        }
+      } else {
+        const amount = num(prev.riskAmount);
+        if (amount != null && amount > 0) {
+          const pct = Math.round(((amount / bal) * 100) * 100) / 100;
+          return { ...prev, riskPercent: String(pct) };
+        }
+      }
+      return prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.accountId]);
+
   const toggleConfluence = React.useCallback(
     (o: string) =>
       set(
@@ -272,6 +319,7 @@ export function TradeForm({
     fd.set("removeImageIds", removeImageIds.join(","));
     if (beforeFile) fd.set("beforeImage", beforeFile);
     if (afterFile) fd.set("afterImage", afterFile);
+    if (trade) fd.set("id", trade.id);
 
     try {
       const res = trade ? await updateTrade(fd) : await createTrade(fd);
@@ -452,7 +500,7 @@ export function TradeForm({
           <NumberField
             label="Risk"
             value={state.riskPercent}
-            onChange={(v) => set("riskPercent", v)}
+            onChange={setRiskPercent}
             placeholder="0.5%"
             suffix="%"
           />
@@ -633,7 +681,7 @@ export function TradeForm({
                 <NumberField
                   label="Risk amount ($)"
                   value={state.riskAmount}
-                  onChange={(v) => set("riskAmount", v)}
+                  onChange={setRiskAmount}
                   placeholder="Auto from %"
                 />
                 <SuggestInput

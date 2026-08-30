@@ -1,10 +1,15 @@
 "use server";
 
-import { existsSync, readdirSync, unlinkSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { parseAccountFormData } from "@/lib/validation";
+import {
+  imageExtension,
+  MAX_LOGO_BYTES,
+  parseAccountFormData,
+} from "@/lib/validation";
 import { syncAccountBalance } from "./trades";
 import type { ActionResult } from "./types";
 
@@ -12,6 +17,12 @@ export async function createAccount(formData: FormData): Promise<ActionResult> {
   const parsed = parseAccountFormData(formData);
   if (!parsed.success) return { ok: false, error: "Invalid account data" };
   const data = parsed.data;
+
+  const logoFile = await getLogoFile(formData);
+  const logoPath = logoFile ? await saveLogoFile(logoFile) : null;
+  if (logoFile && !logoPath) {
+    return { ok: false, error: "Logo must be PNG/JPG/WebP under 1.5MB." };
+  }
 
   try {
     const existingDefault = data.isDefault
@@ -24,9 +35,11 @@ export async function createAccount(formData: FormData): Promise<ActionResult> {
       data: {
         name: data.name,
         provider: data.provider ?? null,
+        logoPath,
         type: data.type,
         initialBalance: data.initialBalance,
         currentBalance: data.initialBalance,
+        profitTargetPercent: data.profitTargetPercent,
         currency: data.currency,
         status: data.status,
         isDefault: data.isDefault,
@@ -61,13 +74,31 @@ export async function updateAccount(formData: FormData): Promise<ActionResult> {
     const existing = await db.tradingAccount.findUnique({ where: { id } });
     if (!existing) return { ok: false, error: "Account not found" };
 
+    const logoFile = await getLogoFile(formData);
+    const removeLogo = String(formData.get("removeLogo")) === "true";
+    let logoPath = existing.logoPath;
+
+    if (logoFile) {
+      const saved = await saveLogoFile(logoFile);
+      if (!saved) {
+        return { ok: false, error: "Logo must be PNG/JPG/WebP under 1.5MB." };
+      }
+      if (logoPath) removeFile(logoPath);
+      logoPath = saved;
+    } else if (removeLogo) {
+      if (logoPath) removeFile(logoPath);
+      logoPath = null;
+    }
+
     const account = await db.tradingAccount.update({
       where: { id },
       data: {
         name: data.name,
         provider: data.provider ?? null,
+        logoPath,
         type: data.type,
         initialBalance: data.initialBalance,
+        profitTargetPercent: data.profitTargetPercent,
         currency: data.currency,
         status: data.status,
       },
@@ -146,6 +177,7 @@ export async function deleteAccount(id: string): Promise<ActionResult> {
         }
       }
     }
+    if (account.logoPath) removeFile(account.logoPath);
 
     await db.tradeImage.deleteMany({
       where: { tradeId: { in: account.trades.map((t) => t.id) } },
@@ -164,6 +196,35 @@ export async function deleteAccount(id: string): Promise<ActionResult> {
     console.error("deleteAccount", err);
     return { ok: false, error: "Could not delete account." };
   }
+}
+
+function uploadsDir(): string {
+  const dir = path.join(process.cwd(), "public", "uploads");
+  mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+async function getLogoFile(formData: FormData): Promise<File | null> {
+  const f = formData.get("logo");
+  return f instanceof File && f.size > 0 ? f : null;
+}
+
+async function saveLogoFile(file: File): Promise<string | null> {
+  if (file.size > MAX_LOGO_BYTES) return null;
+  const ext = imageExtension(file.type);
+  if (!ext) return null;
+  const name = `logo-${randomUUID()}${ext}`;
+  const buf = Buffer.from(await file.arrayBuffer());
+  writeFileSync(path.join(uploadsDir(), name), buf);
+  return `/uploads/${name}`;
+}
+
+function removeFile(url: string) {
+  if (!url.startsWith("/uploads/")) return;
+  const p = path.join(process.cwd(), "public", url.replace(/^\//, ""));
+  try {
+    if (existsSync(p)) unlinkSync(p);
+  } catch {}
 }
 
 export async function resetAllData(): Promise<ActionResult> {

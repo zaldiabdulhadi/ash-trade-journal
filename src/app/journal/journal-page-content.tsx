@@ -10,6 +10,7 @@ import { CardShell } from "@/components/ui/card-shell";
 import { TradeDetailActions } from "@/components/journal/trade-detail-actions";
 import { formatCurrency, formatDateTime, formatPnl, formatR, formatPrice } from "@/lib/formatters";
 import { RESULT_LABEL } from "@/lib/constants";
+import { TradePlanCard } from "@/components/trade-plan-card";
 
 interface JournalPageContentProps {
   trade: any;
@@ -101,7 +102,7 @@ export function JournalPageContent({ trade }: JournalPageContentProps) {
       {/* Trade Plan */}
       {trade.tradePlan && (
         <CardShell title="Trade Plan" description="ICT narrative">
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">{trade.tradePlan}</p>
+          <TradePlanCard plan={trade.tradePlan} />
         </CardShell>
       )}
 

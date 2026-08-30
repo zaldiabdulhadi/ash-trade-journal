@@ -66,7 +66,7 @@ export function TradeShareModal({ isOpen, onClose, data }: TradeShareModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[700px] gap-0 p-0">
+      <DialogContent className="gap-0 p-0 sm:max-w-[700px]">
         {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-3 border-b border-border bg-background">
           <DialogTitle className="text-lg font-semibold">

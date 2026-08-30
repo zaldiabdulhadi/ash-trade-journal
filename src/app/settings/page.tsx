@@ -4,17 +4,34 @@ import Link from "next/link";
 
 import { CardShell } from "@/components/ui/card-shell";
 import { PageHeader } from "@/components/ui/page-header";
-import { SettingsAppearance, SettingsDangerZone } from "@/components/settings/settings-panels";
+import {
+  SettingsAppearance,
+  SettingsBranding,
+  SettingsDangerZone,
+} from "@/components/settings/settings-panels";
+import { getSettings } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Settings" };
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const settings = await getSettings();
+
   return (
     <div className="flex flex-col gap-4">
       <PageHeader title="Settings" description="Preferences and data management" />
 
       <CardShell title="Appearance" description="How the journal looks on your device">
         <SettingsAppearance />
+      </CardShell>
+
+      <CardShell
+        title="Branding"
+        description="Name shown in the sidebar and on share cards"
+      >
+        <SettingsBranding
+          initialBrandName={settings.brandName}
+          initialBrandTagline={settings.brandTagline}
+        />
       </CardShell>
 
       <CardShell title="Data" description="Destructive actions for your local journal">

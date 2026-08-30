@@ -32,7 +32,7 @@ export function AccountSelector({ accounts }: { accounts: AccountDTO[] }) {
 
   return (
     <Select value={current} onValueChange={onSelect}>
-      <SelectTrigger className="h-8 w-[170px] font-medium sm:w-[200px]">
+      <SelectTrigger className="h-8 w-[150px] font-medium sm:w-[170px] md:w-[200px]">
         <Layers className="text-muted-foreground" />
         <SelectValue>
           {active ? active.name : "All Accounts"}

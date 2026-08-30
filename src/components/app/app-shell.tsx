@@ -45,7 +45,7 @@ export function AppShell({
     return (
       <div className="min-h-full">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:block fixed inset-y-0 left-0 z-40 w-56 flex-col border-r bg-sidebar px-3 py-4">
+        <aside className="hidden md:block fixed inset-y-0 left-0 z-40 w-56 flex-col border-r bg-sidebar px-3 py-4">
           <TradeMark />
           <div className="mt-6">
             <NavLinks />
@@ -56,25 +56,25 @@ export function AppShell({
         </aside>
 
         {/* Main column */}
-        <div className="lg:pl-56">
+        <div className="md:pl-56">
           <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/70">
-            <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
-              <div className="lg:hidden">
-                <TradeMark />
+            <div className="flex h-14 items-center gap-2 px-4 sm:gap-3 sm:px-6">
+              <div className="md:hidden">
+                <TradeMark compact />
               </div>
               <div className="ml-auto flex items-center gap-2">
                 <React.Suspense fallback={<AccountSelectorSkeleton />}>
                   <AccountSelector accounts={accounts} />
                 </React.Suspense>
                 <ThemeToggle />
-                <span className="hidden lg:inline-flex">
+                <span className="hidden md:inline-flex">
                   <AddTradeButton />
                 </span>
               </div>
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-[calc(100vw-14rem)] px-4 pb-28 pt-6 sm:px-6 lg:pb-10">
+          <main className="mx-auto w-full max-w-full px-4 pb-28 pt-6 sm:px-6 md:max-w-[calc(100vw-14rem)] md:pb-10">
             {children}
           </main>
         </div>
@@ -88,7 +88,7 @@ export function AppShell({
     <div className="min-h-full">
       {/* Desktop sidebar - only render when expanded */}
       {!collapsed && (
-        <aside className="hidden lg:flex fixed inset-y-0 left-0 z-40 w-56 flex-col border-r bg-sidebar px-3 py-4 overflow-hidden">
+        <aside className="hidden md:flex fixed inset-y-0 left-0 z-40 w-56 flex-col border-r bg-sidebar px-3 py-4 overflow-hidden">
           <TradeMark />
           <div className="mt-6">
             <NavLinks />
@@ -103,14 +103,14 @@ export function AppShell({
       <div
         className={cn(
           "transition-all duration-75 ease-in-out",
-          collapsed ? "" : "lg:pl-56"
+          collapsed ? "" : "md:pl-56"
         )}
       >
         <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/70">
-          <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
+          <div className="flex h-14 items-center gap-2 px-4 sm:gap-3 sm:px-6">
             <button
               onClick={() => setCollapsed((c) => !c)}
-              className="hidden items-center justify-center rounded-lg border border-border/60 bg-secondary/50 p-1.5 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground lg:inline-flex"
+              className="hidden items-center justify-center rounded-lg border border-border/60 bg-secondary/50 p-1.5 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground md:inline-flex"
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
@@ -119,15 +119,15 @@ export function AppShell({
                 <ChevronLeft className="size-4" />
               )}
             </button>
-            <div className="lg:hidden">
-              <TradeMark />
+            <div className="md:hidden">
+              <TradeMark compact />
             </div>
             <div className="ml-auto flex items-center gap-2">
               <React.Suspense fallback={<AccountSelectorSkeleton />}>
                 <AccountSelector accounts={accounts} />
               </React.Suspense>
               <ThemeToggle />
-              <span className="hidden lg:inline-flex">
+              <span className="hidden md:inline-flex">
                 <AddTradeButton />
               </span>
             </div>
@@ -136,8 +136,8 @@ export function AppShell({
 
         <main
           className={cn(
-            "mx-auto px-4 pb-28 pt-6 sm:px-6 lg:pb-10",
-            collapsed ? "max-w-full" : "max-w-[calc(100vw-14rem)]"
+            "mx-auto w-full max-w-full px-4 pb-28 pt-6 sm:px-6 md:pb-10",
+            collapsed ? "max-w-full" : "md:max-w-[calc(100vw-14rem)]"
           )}
         >
           {children}

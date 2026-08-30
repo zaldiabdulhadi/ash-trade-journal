@@ -25,8 +25,8 @@ interface SeedTrade {
 }
 
 const ACCOUNTS = [
-  { name: "FTMO $10K", provider: "FTMO", type: "PROP_FIRM", initialBalance: 10000, currency: "USD" },
-  { name: "Alpha Funded $5K", provider: "Alpha", type: "FUNDED", initialBalance: 5000, currency: "USD" },
+  { name: "FTMO $10K", provider: "FTMO", type: "PROP_FIRM", initialBalance: 10000, currency: "USD", profitTargetPercent: 10 },
+  { name: "Alpha Funded $5K", provider: "Alpha", type: "FUNDED", initialBalance: 5000, currency: "USD", profitTargetPercent: 8 },
 ];
 
 // Deterministic pseudo-random source so seed is reproducible.
@@ -175,6 +175,7 @@ async function main() {
         type: a.type as never,
         initialBalance: a.initialBalance,
         currentBalance: a.initialBalance,
+        profitTargetPercent: a.profitTargetPercent,
         currency: a.currency,
         isDefault: balance === 0,
       },

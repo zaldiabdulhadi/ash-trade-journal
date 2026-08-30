@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = sqlite
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -49,9 +49,11 @@ model TradingAccount {
   id             String         @id @default(cuid())
   name           String
   provider       String?
+  logoPath       String?
   type           AccountType    @default(BROKER)
   initialBalance Float          @default(0)
   currentBalance Float          @default(0)
+  profitTargetPercent Float?
   currency       String         @default("USD")
   status         AccountStatus  @default(ACTIVE)
   isDefault      Boolean        @default(false)
@@ -125,4 +127,12 @@ model SharedRecap {
   account    TradingAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
 
   @@map("shared_recaps")
+}
+
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("app_settings")
 }

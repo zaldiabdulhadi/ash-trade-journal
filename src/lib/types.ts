@@ -10,9 +10,11 @@ export interface AccountDTO {
   id: string;
   name: string;
   provider: string | null;
+  logoUrl: string | null;
   type: AccountType;
   initialBalance: number;
   currentBalance: number;
+  profitTargetPercent: number | null;
   currency: string;
   status: AccountStatus;
   isDefault: boolean;

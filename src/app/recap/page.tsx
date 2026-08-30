@@ -151,6 +151,7 @@ export default async function RecapPage({
     periodLabel: `${periodLabel} · ${title}`,
     accountName,
     provider,
+    accountLogo: account?.logoUrl ?? null,
     currency,
     metrics: {
       totalR: summary.totalR,

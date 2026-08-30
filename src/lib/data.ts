@@ -9,9 +9,11 @@ const accountSelect = {
   id: true,
   name: true,
   provider: true,
+  logoPath: true,
   type: true,
   initialBalance: true,
   currentBalance: true,
+  profitTargetPercent: true,
   currency: true,
   status: true,
   isDefault: true,
@@ -26,9 +28,11 @@ export function toAccountDTO(
     id: a.id,
     name: a.name,
     provider: a.provider,
+    logoUrl: a.logoPath,
     type: a.type,
     initialBalance: a.initialBalance,
     currentBalance: a.currentBalance,
+    profitTargetPercent: a.profitTargetPercent,
     currency: a.currency,
     status: a.status,
     isDefault: a.isDefault,
@@ -62,6 +66,7 @@ const tradeInclude = {
       name: true,
       currency: true,
       provider: true,
+      logoPath: true,
     },
   },
 } satisfies Prisma.TradeInclude;
@@ -165,6 +170,25 @@ export async function getSymbols(accountScope: AccountScope): Promise<string[]> 
     orderBy: { symbol: "asc" },
   });
   return rows.map((r) => r.symbol);
+}
+
+export interface AppSettings {
+  brandName: string;
+  brandTagline: string;
+}
+
+const DEFAULT_APP_SETTINGS: AppSettings = {
+  brandName: "Ash Trade Journal",
+  brandTagline: "local · personal",
+};
+
+export async function getSettings(): Promise<AppSettings> {
+  const rows = await db.appSetting.findMany();
+  const map = new Map(rows.map((r) => [r.key, r.value]));
+  return {
+    brandName: map.get("brandName") ?? DEFAULT_APP_SETTINGS.brandName,
+    brandTagline: map.get("brandTagline") ?? DEFAULT_APP_SETTINGS.brandTagline,
+  };
 }
 
 export async function getDefaultAccountId(): Promise<string | null> {

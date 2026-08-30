@@ -20,7 +20,7 @@ All data lives in a local SQLite file — no accounts, no cloud sync, no telemet
   - Every trade has a public share page at `/trade-share/{id}`.
 - **Analytics** — R distribution and per-day P&L across periods, win/loss breakdown.
 - **Calendar** — heatmap view of daily R for any month.
-- **Accounts** — multiple trading accounts (prop firm / broker / personal / demo / challenge / funded) with balances; archive/delete.
+- **Accounts** — multiple trading accounts (prop firm / broker / personal / demo / challenge / funded) with balances; archive/delete. Prop-related accounts (`PROP_FIRM`, `CHALLENGE`, `FUNDED`) can set a **target profit (%)** and show a progress bar toward it on their card.
 - **Settings** — light/dark appearance, data management (export/clear).
 - **Local-first storage** — everything in `prisma/dev.db`; uploaded images in `public/uploads/`.
 

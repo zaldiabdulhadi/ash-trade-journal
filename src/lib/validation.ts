@@ -98,6 +98,7 @@ export const accountFormSchema = z.object({
   provider: stringField,
   type: z.enum(["PROP_FIRM", "BROKER", "PERSONAL", "DEMO", "CHALLENGE", "FUNDED"]),
   initialBalance: z.number().default(0),
+  profitTargetPercent: z.number().nonnegative().nullable().default(null),
   currency: z.string().trim().min(1).max(8).default("USD"),
   status: z.enum(["ACTIVE", "ARCHIVED"]).default("ACTIVE"),
   isDefault: z.boolean().default(false),
@@ -111,6 +112,7 @@ export function parseAccountFormData(formData: FormData) {
     provider: optionalString(formData.get("provider")),
     type: String(formData.get("type") ?? "BROKER") as AccountFormValues["type"],
     initialBalance: toNum(formData.get("initialBalance")) ?? 0,
+    profitTargetPercent: toNum(formData.get("profitTargetPercent")),
     currency: String(formData.get("currency") ?? "USD").toUpperCase(),
     status: String(formData.get("status") ?? "ACTIVE") as AccountFormValues["status"],
     isDefault: String(formData.get("isDefault")) === "true",
@@ -133,3 +135,4 @@ export function imageExtension(mime: string | null): string | null {
 }
 
 export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+export const MAX_LOGO_BYTES = 1.5 * 1024 * 1024;

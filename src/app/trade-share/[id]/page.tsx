@@ -18,6 +18,9 @@ import {
   formatRR,
   formatSignedPct,
 } from "@/lib/formatters";
+import { ShareBackdrop } from "@/components/trade-share-card";
+import { ShareBrandBadge } from "@/components/share-brand";
+import { TradePlanCard } from "@/components/trade-plan-card";
 
 const METRIC_KEY_LABELS: Record<string, string> = {
   returnPct: "Return %",
@@ -64,7 +67,7 @@ interface TradeCard {
   tradePlan: string | null;
   notes: string | null;
   closedAt: string;
-  account?: { name: string | null; currency: string | null };
+  account?: { name: string | null; currency: string | null; logo: string | null };
 }
 
 function buildMetrics(trade: TradeCard): TradeMetrics {
@@ -144,7 +147,16 @@ export default function TradeSharePage({
           notFound();
         }
         const data = await res.json();
-        setTrade(data);
+        setTrade({
+          ...data,
+          account: data.account
+            ? {
+                name: data.account.name,
+                currency: data.account.currency,
+                logo: data.account.logoPath ?? null,
+              }
+            : undefined,
+        });
       } catch (error) {
         console.error("Failed to fetch trade:", error);
         notFound();
@@ -238,7 +250,7 @@ export default function TradeSharePage({
         </p>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 py-6 sm:px-6">
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-end gap-3">
             <Button
@@ -379,7 +391,7 @@ export default function TradeSharePage({
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
@@ -442,10 +454,7 @@ function TradeLayout({
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(180deg,#0b0f14 0%,#0d1422 100%)" }}
-      />
+      <ShareBackdrop positive={positivePnl} />
 
       <div
         className={cn(
@@ -469,9 +478,7 @@ function TradeLayout({
               {accountName ? ` · ${accountName}` : ""}
             </div>
           </div>
-          <div className="rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold tracking-wide text-slate-200 uppercase ring-1 ring-white/10">
-            Ash Trade Journal
-          </div>
+          <ShareBrandBadge logoUrl={trade.account?.logo} alt={accountName ?? "Prop firm"} />
         </div>
 
         {/* Hero */}
@@ -640,9 +647,7 @@ function TradeLayout({
                 <div className="text-xs uppercase tracking-wide text-slate-500">
                   📋 Trading Plan
                 </div>
-                <p className="mt-1.5 text-sm text-slate-300 whitespace-pre-wrap break-words">
-                  {trade.tradePlan}
-                </p>
+                <TradePlanCard plan={trade.tradePlan} className="mt-2.5" />
               </div>
             )}
             {(trade.notes || trade.marketCondition) && (

@@ -12,6 +12,7 @@ import {
   CandlestickChart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useBrand } from "@/components/brand-provider";
 
 const ICONS = {
   "layout-dashboard": LayoutDashboard,
@@ -64,15 +65,16 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function TradeMark() {
+export function TradeMark({ compact }: { compact?: boolean }) {
+  const { brandName, brandTagline } = useBrand();
   return (
     <div className="flex items-center gap-2.5">
       <div className="relative flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-[0_4px_14px_-4px_rgba(79,127,255,0.6)]">
         <CandlestickChart className="size-[18px]" />
       </div>
-      <div className="leading-tight">
-        <div className="text-sm font-semibold tracking-tight">Trade Journal</div>
-        <div className="text-[10px] text-muted-foreground">local · personal</div>
+      <div className={cn("leading-tight", compact && "hidden sm:block")}>
+        <div className="text-sm font-semibold tracking-tight">{brandName}</div>
+        <div className="text-[10px] text-muted-foreground">{brandTagline}</div>
       </div>
     </div>
   );

@@ -20,6 +20,8 @@ import {
   recapDimension,
   type RecapFormat,
 } from "@/lib/constants";
+import { ShareBackdrop } from "@/components/trade-share-card";
+import { ShareBrandBadge } from "@/components/share-brand";
 
 export interface RecapMetrics {
   totalR: number;
@@ -48,6 +50,7 @@ export interface RecapPayload {
   periodLabel: string;
   accountName: string;
   provider: string | null;
+  accountLogo: string | null;
   currency: string;
   metrics: RecapMetrics;
   best: { symbol: string; r: number; pnl: number } | null;
@@ -309,10 +312,8 @@ function CleanLayout({
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(180deg,#0b0f14 0%,#0d1422 100%)" }}
-      />
+      {/* Subtle dark gradient — removed aurora blur that occluded mini calendar */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800" />
 
       <div
         className={cn(
@@ -336,9 +337,7 @@ function CleanLayout({
               {payload.provider ? ` · ${payload.provider}` : ""}
             </div>
           </div>
-          <div className="rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold tracking-wide text-slate-200 uppercase ring-1 ring-white/10">
-            Ash Trade Journal
-          </div>
+          <ShareBrandBadge logoUrl={payload.accountLogo} alt={payload.accountName} />
         </div>
 
         {/* Hero */}

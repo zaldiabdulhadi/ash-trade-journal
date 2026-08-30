@@ -30,14 +30,14 @@ export function MobileNav() {
       {/* Floating Add Trade */}
       <button
         onClick={() => openCreate()}
-        className="fixed bottom-[4.6rem] right-4 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 active:translate-y-px"
+        className="fixed bottom-[4.6rem] right-4 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 active:translate-y-px md:hidden"
         aria-label="Add Trade"
       >
         <Plus className="size-6" />
       </button>
 
       {/* Bottom bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-stretch border-t bg-sidebar/95 backdrop-blur lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-stretch border-t bg-sidebar/95 backdrop-blur md:hidden">
         {NAV.map((item) => {
           const Icon = item.icon;
           const active =
