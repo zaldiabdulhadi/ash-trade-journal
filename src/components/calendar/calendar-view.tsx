@@ -248,25 +248,25 @@ export function CalendarView({
                       <span className="text-[11px] font-medium tabular-nums">
                         {cell.getDate()}
                       </span>
-                      {stats && stats.count > 0 ? (
-                        <span className={cn("text-[10px] font-semibold tabular-nums sm:text-xs", toneClass(stats.r))}>
-                          {cellMetric === "r"
-                            ? `${stats.r >= 0 ? "+" : ""}${stats.r.toFixed(1)}`
-                            : cellMetric === "pct"
-                              ? stats.pct == null
-                                ? "—"
-                                : formatPct(stats.pct)
-                              : formatShortMoney(stats.pnl, currency)}
-                        </span>
-                      ) : (
-                        <span className="text-[10px] text-muted-foreground/60">·</span>
-                      )}
+                       {stats && stats.count > 0 ? (
+                         <span className={cn("text-xs font-semibold tabular-nums sm:text-base", toneClass(stats.r))}>
+                           {cellMetric === "r"
+                             ? `${stats.r >= 0 ? "+" : ""}${stats.r.toFixed(1)}`
+                             : cellMetric === "pct"
+                               ? stats.pct == null
+                                 ? "—"
+                                 : formatPct(stats.pct)
+                               : formatShortMoney(stats.pnl, currency)}
+                         </span>
+                       ) : (
+                         <span className="text-xs text-muted-foreground/60">·</span>
+                       )}
                     </Link>
                   );
                 })}
               </div>
 
-              <div className="flex items-center justify-end gap-4 pt-1 text-[11px] text-muted-foreground">
+              <div className="flex items-center justify-end gap-4 pt-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <span className="inline-block size-2.5 rounded-sm bg-rose-500/80" /> Losing day
                 </span>
@@ -296,8 +296,8 @@ function StatCard({
 }) {
   return (
     <div className="rounded-xl border border-border bg-card p-3 shadow-card">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className={cn("mt-1 font-semibold tabular-nums", tone === "positive" && "text-emerald-500", tone === "negative" && "text-rose-500")}>
+      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className={cn("mt-1 text-lg font-bold tabular-nums", tone === "positive" && "text-emerald-500", tone === "negative" && "text-rose-500")}>
         {value}
       </div>
     </div>
