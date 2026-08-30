@@ -52,72 +52,72 @@
 }
 
 :root {
-  --background: #f2f0fc;
-  --foreground: #141926;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #141926;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #141926;
-  --primary: #8b5cf6;
+  --popover-foreground: #0f172a;
+  --primary: #6366f1;
   --primary-foreground: #ffffff;
-  --secondary: #f5f3ff;
-  --secondary-foreground: #1a2132;
-  --muted: #faf7ff;
-  --muted-foreground: #5a6579;
-  --accent: #f5f3ff;
-  --accent-foreground: #1a2132;
-  --destructive: #e11d48;
-  --border: #dddaf6;
-  --input: #d4d0eb;
-  --ring: #8b5cf6;
-  --chart-1: #8b5cf6;
-  --chart-2: #6366f1;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #1e293b;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #6366f1;
+  --chart-1: #6366f1;
+  --chart-2: #8b5cf6;
   --chart-3: #10b981;
   --chart-4: #f59e0b;
-  --chart-5: #e11d48;
+  --chart-5: #ef4444;
   --radius: 0.75rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #141926;
-  --sidebar-primary: #8b5cf6;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f5f3ff;
-  --sidebar-accent-foreground: #1a2132;
-  --sidebar-border: #dddaf6;
-  --sidebar-ring: #8b5cf6;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #6366f1;
 }
 
 .dark {
-  --background: #030216;
-  --foreground: #e8eef6;
-  --card: #0b0c2e;
-  --card-foreground: #e8eef6;
-  --popover: #0d0e29;
-  --popover-foreground: #e8eef6;
-  --primary: #a855f7;
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
+  --primary: #6366f1;
   --primary-foreground: #ffffff;
-  --secondary: #141030;
-  --secondary-foreground: #dce4f0;
-  --muted: #0f0e2a;
-  --muted-foreground: #8b98ac;
-  --accent: #12102e;
-  --accent-foreground: #dce4f0;
-  --destructive: #fb7185;
-  --border: #1f1c44;
-  --input: #27234d;
-  --ring: #a855f7;
-  --chart-1: #c084fc;
-  --chart-2: #818cf8;
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #e2e8f0;
+  --destructive: #ef4444;
+  --border: #1e293b;
+  --input: #334155;
+  --ring: #818cf8;
+  --chart-1: #818cf8;
+  --chart-2: #c084fc;
   --chart-3: #10b981;
   --chart-4: #fbbf24;
-  --chart-5: #93c5fd;
-  --sidebar: #080716;
-  --sidebar-foreground: #dce4f0;
-  --sidebar-primary: #a855f7;
+  --chart-5: #fb7185;
+  --sidebar: #020617;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #11102e;
-  --sidebar-accent-foreground: #dce4f0;
-  --sidebar-border: #16133a;
-  --sidebar-ring: #a855f7;
+  --sidebar-accent: #0f172a;
+  --sidebar-accent-foreground: #cbd5e1;
+  --sidebar-border: #0f172a;
+  --sidebar-ring: #818cf8;
 }
 
 @layer base {
@@ -128,9 +128,9 @@
     @apply bg-background text-foreground;
     background-color: var(--background);
     background-image: 
-      radial-gradient(1000px 480px at 50% -20%, rgba(139, 92, 246, 0.15) 0%, transparent 70%),
-      radial-gradient(800px 300px at 120% 20%, rgba(147, 51, 234, 0.08) 0%, transparent 60%),
-      radial-gradient(600px 200px at -20% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 50%);
+      radial-gradient(1200px 500px at 50% -10%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
+      radial-gradient(800px 300px at 120% 20%, rgba(168, 85, 247, 0.04) 0%, transparent 60%),
+      radial-gradient(600px 200px at -20% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
     position: relative;
   }
   
@@ -147,7 +147,7 @@
     @apply font-heading tracking-tight;
   }
   ::selection {
-    background-color: rgb(139 92 246 / 0.28);
+    background-color: rgb(99, 102, 241 / 0.2);
   }
   .tabular-nums {
     font-family: var(--font-mono);
