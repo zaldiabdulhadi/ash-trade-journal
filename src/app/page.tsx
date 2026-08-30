@@ -1,69 +1,154 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import { Calculator, BookOpen } from "lucide-react";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+import { getAccounts, getTrades } from "@/lib/data";
+import {
+  buildEquityCurve,
+  summarizePerformance,
+} from "@/lib/calculations/metrics";
+import { monthKey } from "@/lib/dates";
+import { formatCurrency, formatPnl, formatR, formatPercent } from "@/lib/formatters";
+import { MetricCard } from "@/components/dashboard/metric-card";
+import { CardShell, EmptyState } from "@/components/ui/card-shell";
+import { EquityCurveChart } from "@/components/dashboard/charts";
+import { MonthCard, TodayCard, WeekCard } from "@/components/dashboard/performance-cards";
+import { AddTradeButton } from "@/components/journal/add-trade-button";
+import { PageHeader } from "@/components/ui/page-header";
+
+export const metadata: Metadata = { title: "Dashboard" };
+export const dynamic = "force-dynamic";
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ account?: string; month?: string }>;
+}) {
+  const sp = await searchParams;
+  const accountScope =
+    typeof sp.account === "string" && sp.account ? sp.account : "all";
+  const monthParam =
+    typeof sp.month === "string" && sp.month ? sp.month : monthKey(new Date());
+
+  const [accounts, trades] = await Promise.all([
+    getAccounts(),
+    getTrades({ accountScope }),
+  ]);
+
+  const currency =
+    accountScope !== "all"
+      ? accounts.find((a) => a.id === accountScope)?.currency ?? "USD"
+      : accounts[0]?.currency ?? "USD";
+
+  const summary = summarizePerformance(trades);
+  const points = buildEquityCurve(trades);
+
+  const equityPoints = points.map((p) => ({
+    index: p.index,
+    ts: p.ts,
+    label: p.label,
+    pnl: p.pnl,
+    r: p.r,
+  }));
+
+  if (accounts.length === 0) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader title="Dashboard" description="How are you performing?" />
+        <EmptyState
+          icon={<BookOpen className="size-6" />}
+          title="No trading accounts yet."
+          description="Your performance will appear here once you create an account and start journaling trades."
+          action={
+            <AddTradeButton className="opacity-60 pointer-events-none" />
+          }
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </div>
+    );
+  }
+
+  if (trades.length === 0) {
+    return (
+      <div className="flex flex-col gap-6">
+        <PageHeader title="Dashboard" description="How are you performing?" />
+        <EmptyState
+          icon={<Calculator className="size-6" />}
+          title="Your performance will appear here"
+          description="Once you start journaling trades, your P&L, R multiple, win rate and equity curve will show up here."
+          action={<AddTradeButton accountId={accountScope === "all" ? undefined : accountScope} />}
+        />
+      </div>
+    );
+  }
+
+  const pfDisplay =
+    summary.profitFactor == null
+      ? summary.grossProfit > 0
+        ? "∞"
+        : "—"
+      : summary.profitFactor.toFixed(2);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <PageHeader title="Dashboard" description="How are you performing?" />
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+        <MetricCard
+          label="Net P&L"
+          value={formatPnl(summary.totalPnl, currency)}
+          tone={summary.totalPnl >= 0 ? "positive" : "negative"}
+          sub={`${summary.tradeCount} trades`}
+        />
+        <MetricCard
+          label="Total R"
+          value={formatR(summary.totalR)}
+          tone={summary.totalR >= 0 ? "positive" : "negative"}
+          sub={summary.expectancyR == null ? "—" : `avg ${formatR(summary.expectancyR)}/trade`}
+        />
+        <MetricCard
+          label="Win Rate"
+          value={summary.winRate == null ? "—" : formatPercent(summary.winRate)}
+          sub={`${summary.wins}W · ${summary.losses}L`}
+        />
+        <MetricCard
+          label="Profit Factor"
+          value={pfDisplay}
+          sub={
+            summary.expectancyPnl === 0 && summary.grossProfit === 0
+              ? "—"
+              : `gross ${syncSign(summary.grossProfit)} / ${formatCurrency(summary.grossLoss, currency)}`
+          }
+        />
+        <MetricCard
+          label="Trades"
+          value={summary.tradeCount}
+          sub={`${summary.breakevens} breakeven`}
+        />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <CardShell title="Equity Curve" description="Cumulative P&L from journaled trades">
+            <EquityCurveChart points={equityPoints} currency={currency} />
+          </CardShell>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <TodayCard trades={trades} currency={currency} accountScope={accountScope} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <MonthCard
+            trades={trades}
+            currency={currency}
+            accountScope={accountScope}
+            monthParam={monthParam}
+          />
         </div>
-      </main>
+        <WeekCard trades={trades} currency={currency} accountScope={accountScope} />
+      </div>
     </div>
   );
+}
+
+function syncSign(v: number): string {
+  return formatPnl(v, "USD");
 }

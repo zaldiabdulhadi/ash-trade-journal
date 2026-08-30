@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = sqlite
+  url      = env("DATABASE_URL")
+}
+
+enum Direction {
+  LONG
+  SHORT
+}
+
+enum TradeResult {
+  WIN
+  LOSS
+  BREAKEVEN
+}
+
+enum AccountType {
+  PROP_FIRM
+  BROKER
+  PERSONAL
+  DEMO
+  CHALLENGE
+  FUNDED
+}
+
+enum AccountStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ImageType {
+  BEFORE
+  AFTER
+  RESULT_SHARING
+}
+
+enum RecapType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+model TradingAccount {
+  id             String         @id @default(cuid())
+  name           String
+  provider       String?
+  type           AccountType    @default(BROKER)
+  initialBalance Float          @default(0)
+  currentBalance Float          @default(0)
+  currency       String         @default("USD")
+  status         AccountStatus  @default(ACTIVE)
+  isDefault      Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  trades         Trade[]
+  recaps         SharedRecap[]
+
+  @@map("trading_accounts")
+}
+
+model Trade {
+  id              String      @id @default(cuid())
+  accountId       String
+  symbol          String
+  direction       Direction
+  entryPrice      Float
+  exitPrice       Float?
+  stopLoss        Float?
+  takeProfit      Float?
+  riskAmount      Float?
+  riskPercent     Float?
+  rr              Float?
+  rMultiple       Float?
+  pnl             Float?
+  result          TradeResult
+  strategy        String?
+  setup           String?
+  session         String?
+  timeframe       String?
+  marketCondition String?
+  emotion         String?
+  mistake         String?
+  confidence      Int?
+  notes           String?
+  tradePlan       String?
+  openedAt        DateTime
+  closedAt        DateTime
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  account         TradingAccount @relation(fields: [accountId], references: [id])
+  images          TradeImage[]
+
+  @@index([accountId])
+  @@index([symbol])
+  @@index([closedAt])
+  @@map("trades")
+}
+
+model TradeImage {
+  id        String    @id @default(cuid())
+  tradeId   String
+  url       String
+  type      ImageType
+  createdAt DateTime  @default(now())
+  trade     Trade     @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+
+  @@index([tradeId])
+  @@map("trade_images")
+}
+
+model SharedRecap {
+  id         String    @id @default(cuid())
+  accountId  String?
+  periodType RecapType
+  startDate  DateTime
+  endDate    DateTime
+  template   String    @default("CLEAN")
+  format     String    @default("1440x1080")
+  createdAt  DateTime  @default(now())
+  account    TradingAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+
+  @@map("shared_recaps")
+}
