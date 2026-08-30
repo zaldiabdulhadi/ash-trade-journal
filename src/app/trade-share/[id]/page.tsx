@@ -462,18 +462,18 @@ function TradeLayout({
             {/* Header */}
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <div className="text-base font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <div className="text-lg font-semibold uppercase tracking-[0.2em] text-slate-500">
                   {brandName}
                 </div>
                 <div
                   className={cn(
                     "mt-2 font-bold text-slate-100",
-                    landscape ? "text-5xl" : "text-6xl"
+                    landscape ? "text-6xl" : "text-7xl"
                   )}
                 >
                   {trade.symbol}
                 </div>
-                <div className="mt-2 text-xl font-semibold text-slate-300">
+                <div className="mt-2 text-2xl font-semibold text-slate-300">
                   {layoutTitle}
                   {accountName ? ` · ${accountName}` : ""}
                 </div>
@@ -482,10 +482,10 @@ function TradeLayout({
             </div>
 
             {/* Hero — WIN/LOSS headline */}
-            <div className="mt-6">
+            <div className="mt-8">
               <div
                 className={cn(
-                  "text-base font-semibold uppercase tracking-[0.24em]",
+                  "text-2xl font-bold uppercase tracking-[0.24em]",
                   footerPositive ? "text-emerald-400" : "text-rose-400"
                 )}
               >
@@ -494,12 +494,18 @@ function TradeLayout({
               {headlineVisible && (
                 <div
                   className={cn(
-                    "mt-2 leading-none font-bold tabular-nums tracking-tight",
-                    landscape ? "text-[88px]" : "text-[96px]",
-                    headlineInfo.positive ? "text-emerald-400" : "text-rose-400"
+                    "mt-3 leading-none font-bold tabular-nums tracking-tight",
+                    landscape ? "text-[100px]" : "text-[110px]"
                   )}
+                  style={{
+                    fontSize: landscape
+                      ? "clamp(72px, 11vw, 100px)"
+                      : "clamp(80px, 12vw, 116px)",
+                  }}
                 >
-                  {headlineInfo.value}
+                  <span className={headlineInfo.positive ? "text-emerald-400" : "text-rose-400"}>
+                    {headlineInfo.value}
+                  </span>
                 </div>
               )}
             </div>
@@ -569,15 +575,15 @@ function TradeLayout({
             </div>
 
             {/* Footer */}
-            <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4 text-lg">
-              <span className="text-slate-500">
+            <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4 text-xl">
+              <span className="text-lg text-slate-500">
                 {closedDate.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
                 })}
               </span>
-              <span className="text-slate-400 tabular-nums">
+              <span className="text-xl text-slate-400 tabular-nums">
                 {footerText} · {formatR(m.totalR)}
               </span>
             </div>

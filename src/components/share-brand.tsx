@@ -13,12 +13,12 @@ export function ShareBrandBadge({
 
   if (logoUrl) {
     return (
-      <div className="flex h-20 max-w-[300px] shrink-0 items-center justify-center px-5 py-2">
+      <div className="flex h-24 max-w-[340px] shrink-0 items-center justify-center px-5 py-2">
         {/* Remove solid background to support transparency */}
         <img
           src={logoUrl}
           alt={alt}
-          className="max-h-20 w-auto max-w-[260px] rounded-full object-contain"
+          className="max-h-24 w-auto max-w-[300px] rounded-full object-contain"
         />
       </div>
     );
