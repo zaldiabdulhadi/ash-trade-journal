@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { getSettings } from "@/lib/data";
 import {
   formatPnl,
   formatPercent,
@@ -21,6 +22,7 @@ import {
 import { ShareBackdrop } from "@/components/trade-share-card";
 import { ShareBrandBadge } from "@/components/share-brand";
 import { TradePlanCard } from "@/components/trade-plan-card";
+import { useBrand } from "@/components/brand-provider";
 
 const METRIC_KEY_LABELS: Record<string, string> = {
   returnPct: "Return %",
@@ -232,6 +234,7 @@ export default function TradeSharePage({
 
   const metrics = buildMetrics(trade);
   const side = buildContractType(trade);
+  const { brandName } = useBrand();
 
   return (
     <div className="min-h-full bg-background">
@@ -300,6 +303,7 @@ export default function TradeSharePage({
                       headline={headline}
                       enabled={enabled}
                       landscape={!portrait}
+                      brandName={brandName}
                     />
                   </div>
                 </div>
@@ -407,6 +411,7 @@ function TradeLayout({
   headline,
   enabled,
   landscape,
+  brandName,
 }: {
   trade: TradeCard;
   metrics: TradeMetrics;
@@ -414,6 +419,7 @@ function TradeLayout({
   headline: HeadlineKey;
   enabled: Record<string, boolean>;
   landscape: boolean;
+  brandName: string;
 }) {
   const m = metrics;
   const positivePnl = m.totalPnl >= 0;
@@ -465,15 +471,18 @@ function TradeLayout({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              {brandName}
+            </div>
             <div
               className={cn(
-                "font-semibold text-slate-200",
-                landscape ? "text-2xl" : "text-3xl"
+                "mt-1 font-bold text-slate-100",
+                landscape ? "text-4xl" : "text-5xl"
               )}
             >
               {trade.symbol}
             </div>
-            <div className="mt-1 text-sm text-slate-400">
+            <div className="mt-1 text-base font-semibold text-slate-300">
               {layoutTitle}
               {accountName ? ` · ${accountName}` : ""}
             </div>
