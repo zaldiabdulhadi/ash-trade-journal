@@ -598,10 +598,10 @@ function MiniCalendar({
         {days.map((d, i) => (
           <div
             key={i}
-            className="flex flex-col justify-between rounded-lg bg-white/[0.07] px-2.5 py-2 ring-1 ring-white/25"
+            className="flex flex-col justify-between rounded-lg bg-white/[0.12] px-2.5 py-2 ring-1 ring-white/35"
             style={cellBg(d.r, maxAbs)}
           >
-            <span className="text-xs font-semibold text-slate-100">
+            <span className="text-xs font-semibold text-white">
               {d.label}
             </span>
             <span
@@ -610,9 +610,9 @@ function MiniCalendar({
                 !compact || weekly ? "text-xl" : "text-lg",
                 d.count > 0
                   ? d.r >= 0
-                    ? "text-emerald-300"
-                    : "text-rose-300"
-                  : "text-slate-500"
+                    ? "text-emerald-400"
+                    : "text-rose-400"
+                  : "text-slate-400"
               )}
             >
               {d.count > 0 ? `${d.r >= 0 ? "+" : ""}${d.r.toFixed(1)}` : "·"}
@@ -644,13 +644,13 @@ function MetricTile({
   large?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-white/[0.10] px-4 py-4 ring-1 ring-white/20">
-      <div className="text-sm font-medium tracking-wide text-slate-200 uppercase">{label}</div>
+    <div className="rounded-xl bg-white/[0.14] px-4 py-4 ring-1 ring-white/30">
+      <div className="text-sm font-semibold tracking-wide text-slate-100 uppercase">{label}</div>
       <div
         className={cn(
           "mt-1.5 font-bold leading-tight tabular-nums",
           large ? "text-4xl" : "text-3xl",
-          positive === undefined ? "text-white" : positive ? "text-emerald-300" : "text-rose-300"
+          positive === undefined ? "text-white" : positive ? "text-emerald-400" : "text-rose-400"
         )}
       >
         {value}
