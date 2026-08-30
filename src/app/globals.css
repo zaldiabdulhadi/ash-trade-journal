@@ -129,7 +129,7 @@
     background-color: var(--background);
     background-image: radial-gradient(
       1000px 480px at 50% -12%,
-      rgb(139 92 246 / 0.05),
+      rgb(139 92 246 / 0.12),
       transparent 60%
     );
   }
