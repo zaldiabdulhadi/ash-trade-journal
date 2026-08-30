@@ -249,7 +249,7 @@ export function CalendarView({
                         {cell.getDate()}
                       </span>
                        {stats && stats.count > 0 ? (
-                         <span className={cn("text-xs font-semibold tabular-nums sm:text-base", toneClass(stats.r))}>
+                         <span className="text-xs font-semibold tabular-nums text-white sm:text-base">
                            {cellMetric === "r"
                              ? `${stats.r >= 0 ? "+" : ""}${stats.r.toFixed(1)}`
                              : cellMetric === "pct"
@@ -313,10 +313,4 @@ function dayColor(r: number, maxAbs: number): React.CSSProperties {
   if (r > 0) return { background: `rgba(52,211,153,${intensity})` };
   if (r < 0) return { background: `rgba(251,113,133,${intensity})` };
   return {};
-}
-
-function toneClass(r: number): string {
-  if (r > 0) return "text-emerald-500";
-  if (r < 0) return "text-rose-500";
-  return "text-muted-foreground";
 }
