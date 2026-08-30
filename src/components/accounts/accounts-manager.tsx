@@ -455,15 +455,23 @@ function AccountFormDialog({
             <div className="grid gap-1.5 sm:col-span-2">
               <Label>Logo / Prop firm badge</Label>
               <div className="flex items-center gap-3">
-                <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-secondary text-sm font-semibold">
+                <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background p-1.5">
+                  {/* Checkered background to indicate transparency */}
+                  <div className="absolute inset-0 opacity-[0.1] pointer-events-none"
+                    style={{
+                      backgroundImage: 'linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%)',
+                      backgroundSize: '8px 8px',
+                      backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0'
+                    }}
+                  />
                   {logoPreview && !removeLogo ? (
                     <img
                       src={logoPreview}
                       alt="Logo preview"
-                      className="h-full w-full object-contain p-1.5"
+                      className="h-full w-full object-contain relative z-10"
                     />
                   ) : (
-                    <ImagePlus className="size-4 text-muted-foreground" />
+                    <ImagePlus className="size-4 text-muted-foreground relative z-10" />
                   )}
                 </div>
                 <div className="flex flex-col gap-1">
@@ -472,7 +480,7 @@ function AccountFormDialog({
                     {logoFile ? "Change logo" : "Choose logo"}
                     <input
                       type="file"
-                      accept="image/png,image/jpeg,image/webp"
+                      accept="image/png"
                       className="hidden"
                       onChange={handleLogoChange}
                     />
@@ -489,7 +497,7 @@ function AccountFormDialog({
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                PNG, JPG atau WebP · maks 1.5MB. Tampil di share card.
+                <strong>Gunakan PNG transparan</strong> untuk hasil terbaik. Maks 1.5MB. Tampil di share card.
               </p>
             </div>
             {editing && (

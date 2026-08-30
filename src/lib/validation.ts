@@ -121,11 +121,11 @@ export function parseAccountFormData(formData: FormData) {
 }
 
 export const ALLOWED_EXTENSIONS: Record<string, string> = {
-  "image/png": ".png",
-  "image/jpeg": ".jpg",
-  "image/jpg": ".jpg",
-  "image/webp": ".webp",
-  "image/gif": ".gif",
+  "image/png": ".png", // ✅ BEST: Supports transparent backgrounds (recommended for logos)
+  "image/jpeg": ".jpg", // ⚠️ No transparency - fills with solid color
+  "image/jpg": ".jpg", // ⚠️ No transparency
+  "image/webp": ".webp", // 🟡 Partial transparency support
+  "image/gif": ".gif", // 🟡 Limited transparency
 };
 
 export function imageExtension(mime: string | null): string | null {
@@ -136,3 +136,6 @@ export function imageExtension(mime: string | null): string | null {
 
 export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 export const MAX_LOGO_BYTES = 1.5 * 1024 * 1024;
+
+// Note: For account logos, we strongly recommend PNG format with transparent backgrounds.
+// Other formats (JPG/WebP/GIF) will fill transparent areas with solid colors or don't support alpha properly.
