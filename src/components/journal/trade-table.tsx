@@ -3,11 +3,12 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MoreHorizontal, Pencil, Trash2, ArrowUpRight, ArrowDownRight, ExternalLink } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, ArrowUpRight, ArrowDownRight, ExternalLink, Square, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +39,15 @@ export interface JournalRow {
   trade: TradeDTO;
 }
 
-export function TradeTable({ rows }: { rows: JournalRow[] }) {
+export function TradeTable({ 
+  rows, 
+  selectedIds = new Set(),
+  onSelectRow,
+}: { 
+  rows: JournalRow[];
+  selectedIds?: Set<string>;
+  onSelectRow?: (id: string, checked: boolean) => void;
+}) {
   const router = useRouter();
   const [deleting, setDeleting] = React.useState<string | null>(null);
 
@@ -55,6 +64,16 @@ export function TradeTable({ rows }: { rows: JournalRow[] }) {
     } else {
       toast.error(res.error ?? "Could not delete trade");
     }
+  };
+
+  // Check if all visible rows are selected
+  const allSelected = rows.length > 0 && rows.every(row => selectedIds.has(row.id));
+  const someSelected = rows.some(row => selectedIds.has(row.id));
+
+  const handleSelectAll = (checked: boolean) => {
+    rows.forEach(row => {
+      onSelectRow?.(row.id, checked);
+    });
   };
 
   if (rows.length === 0) {
@@ -74,6 +93,23 @@ export function TradeTable({ rows }: { rows: JournalRow[] }) {
         <table className="w-full min-w-[760px] text-sm">
           <thead>
             <tr className="border-b border-border/60 text-left text-xs text-muted-foreground">
+              {onSelectRow && (
+                <th className="px-3 py-3 w-10">
+                  <button
+                    onClick={() => handleSelectAll(!allSelected)}
+                    className="rounded-md border p-1 hover:bg-accent"
+                    title={allSelected ? "Deselect all" : "Select all"}
+                  >
+                    {allSelected ? (
+                      <CheckSquare className="size-4" />
+                    ) : someSelected ? (
+                      <Square className="size-4" />
+                    ) : (
+                      <Square className="size-4" />
+                    )}
+                  </button>
+                </th>
+              )}
               <th className="px-4 py-3 font-medium">Date</th>
               <th className="px-3 py-3 font-medium">Symbol</th>
               <th className="px-3 py-3 font-medium">Type</th>
@@ -88,6 +124,15 @@ export function TradeTable({ rows }: { rows: JournalRow[] }) {
           <tbody className="divide-y divide-border/60">
             {rows.map((row) => (
               <tr key={row.id} className="group transition-colors hover:bg-accent/40">
+                {onSelectRow && (
+                  <td className="px-3 py-2.5">
+                    <Checkbox
+                      checked={selectedIds.has(row.id)}
+                      onCheckedChange={(checked) => onSelectRow(row.id, checked as boolean)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </td>
+                )}
                 <td className="px-4 py-2.5 whitespace-nowrap">
                   <Link href={`/journal/${row.id}`} className="font-medium tabular-nums hover:underline">
                     {formatDateShort(new Date(row.ts))}

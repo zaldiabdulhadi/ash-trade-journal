@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { JournalToolbar, type JournalFilterState } from "@/components/journal/journal-toolbar";
 import { TradeTable, type JournalRow } from "@/components/journal/trade-table";
 import { AddTradeButton } from "@/components/journal/add-trade-button";
+import JournalPageClient from "@/app/journal/journal-page-client";
 
 export const metadata: Metadata = { title: "Journal" };
 export const dynamic = "force-dynamic";
@@ -78,44 +79,14 @@ export default async function JournalPage({
     trade: toTradeDTO(t),
   }));
 
+  // Client-side features
   return (
-    <div className="flex flex-col gap-4">
-      <PageHeader
-        title="Journal"
-        description={
-          <>
-            {rows.length} trade{rows.length === 1 ? "" : "s"}
-            {rows.length > 0 && <> · {summarize(rows)}</>}
-          </>
-        }
-      >
-        <AddTradeButton accountId={accountScope === "all" ? undefined : accountScope} />
-      </PageHeader>
-
-      {accounts.length === 0 ? (
-        <EmptyState
-          icon={<BookOpen className="size-6" />}
-          title="No trading accounts yet"
-          description="Create an account to start journaling your trades."
-        />
-      ) : (
-        <div className="flex flex-col gap-3">
-          <JournalToolbar symbols={symbols} filters={filters} />
-          <TradeTable rows={rows} />
-        </div>
-      )}
-    </div>
+    <JournalPageClient
+      initialRows={rows}
+      accounts={accounts}
+      symbols={symbols}
+      filters={filters}
+      accountScope={accountScope}
+    />
   );
-}
-
-function summarize(rows: JournalRow[]): string {
-  let r = 0;
-  let wins = 0;
-  for (const row of rows) {
-    r += row.r ?? 0;
-    if ((row.pnl ?? 0) > 0) wins++;
-  }
-  const parts = [`${r >= 0 ? "+" : ""}${r.toFixed(1)}R`];
-  if (rows.length > 0) parts.push(`${((wins / rows.length) * 100).toFixed(0)}% win rate`);
-  return parts.join(" · ");
 }

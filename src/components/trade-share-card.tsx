@@ -62,14 +62,17 @@ export function TradeShareCard({
 export function ShareBackdrop({ positive }: { positive: boolean }) {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
-      {/* Base gradient */}
+      {/* Base gradient with blur */}
       <div
         className="absolute inset-0"
-        style={{ background: "linear-gradient(155deg,#152040 0%,#0d1526 45%,#070b14 100%)" }}
+        style={{ 
+          background: "linear-gradient(155deg,#152040 0%,#0d1526 45%,#070b14 100%)",
+          filter: "blur(0px)"
+        }}
       />
 
-      {/* Decorative line art */}
-      <div className="absolute inset-0">
+      {/* Decorative line art with backdrop blur */}
+      <div className="absolute inset-0 backdrop-blur-[2px]">
         <svg
           width="100%"
           height="100%"
@@ -157,18 +160,18 @@ export function ShareBackdrop({ positive }: { positive: boolean }) {
         </svg>
       </div>
 
-      {/* Aurora glows (tinted by result) */}
+      {/* Aurora glows (tinted by result) with enhanced blur */}
       <div
         className={cn(
-          "absolute -top-44 -right-32 h-[560px] w-[560px] rounded-full blur-3xl",
-          positive ? "bg-emerald-500/20" : "bg-rose-500/20"
+          "absolute -top-44 -right-32 h-[560px] w-[560px] rounded-full blur-[80px]",
+          positive ? "bg-emerald-500/25" : "bg-rose-500/25"
         )}
       />
-      <div className="absolute -bottom-48 -left-32 h-[640px] w-[640px] rounded-full bg-indigo-500/15 blur-3xl" />
+      <div className="absolute -bottom-48 -left-32 h-[640px] w-[640px] rounded-full bg-indigo-500/20 blur-[90px]" />
       <div
         className={cn(
-          "absolute -top-24 -left-24 h-80 w-80 rounded-full blur-3xl",
-          positive ? "bg-teal-400/10" : "bg-orange-500/10"
+          "absolute -top-24 -left-24 h-80 w-80 rounded-full blur-[70px]",
+          positive ? "bg-teal-400/15" : "bg-orange-500/15"
         )}
       />
 
@@ -232,58 +235,27 @@ function TradeShareContent({
           <ShareBrandBadge logoUrl={data.logoUrl} alt={data.accountName ?? "Prop firm"} />
         </div>
 
-        {/* Hero */}
-        <div className="mt-6 flex items-center gap-8">
-          <div className="min-w-0">
-            <div className="text-base font-semibold uppercase tracking-[0.24em] text-slate-400">
-              {data.result}
-            </div>
-            
-            <div
-              className={cn(
-                "mt-2 leading-none font-bold tabular-nums tracking-tight",
-                "text-[96px]",
-                positivePnl ? "text-emerald-400" : "text-rose-400"
-              )}
-            >
-              {positivePnl ? "+" : ""}{formatPnl(data.pnl, "USD")}
-            </div>
-
-            <div
-              className={cn(
-                "flex items-center gap-5 font-semibold text-slate-300 mt-3 text-2xl"
-              )}
-            >
-              <span
-                className={cn(positivePnl ? "text-emerald-300/90" : "text-rose-300/90")}
-              >
-                {formatR(data.rMultiple)}
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Entry/Exit Prices */}
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-4 grid grid-cols-2 gap-3">
           <MetricTile
             label="Entry Price"
             value={`${data.entryPrice.toLocaleString()}`}
             large={true}
           />
-          {data.exitPrice && (
-            <MetricTile
-              label="Exit Price"
-              value={`${data.exitPrice.toLocaleString()}`}
-              large={true}
-            />
-          )}
-        </div>
+            {data.exitPrice && (
+              <MetricTile
+                label="Exit Price"
+                value={`${data.exitPrice.toLocaleString()}`}
+                large={true}
+              />
+            )}
+          </div>
 
         {/* Footer */}
         <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-sm">
           <span className="text-slate-500">Individual trade</span>
           <span className="text-slate-400 tabular-nums">
-            {positivePnl ? "WINNER" : "LOSER"} · {formatR(data.rMultiple)}R
+            WIN / LOSS · {formatR(data.rMultiple)}R
           </span>
         </div>
       </div>
@@ -301,8 +273,8 @@ function MetricTile({
   large?: boolean;
 }) {
   return (
-    <div className="rounded-xl bg-white/[0.07] px-4 py-4 ring-1 ring-white/10">
-      <div className="text-xs tracking-wide text-slate-400 uppercase">{label}</div>
+    <div className="rounded-xl bg-white/[0.10] px-4 py-4 ring-1 ring-white/20 backdrop-blur-sm">
+      <div className="text-sm tracking-wide text-slate-300 uppercase">{label}</div>
       <div
         className={cn(
           "mt-1.5 font-bold leading-tight tabular-nums",
