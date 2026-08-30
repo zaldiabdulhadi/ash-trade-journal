@@ -127,11 +127,17 @@
   body {
     @apply bg-background text-foreground;
     background-color: var(--background);
-    background-image: radial-gradient(
-      1000px 480px at 50% -12%,
-      rgb(139 92 246 / 0.12),
-      transparent 60%
-    );
+    background-image: 
+      radial-gradient(1000px 480px at 50% -20%, rgba(139, 92, 246, 0.15) 0%, transparent 70%),
+      radial-gradient(800px 300px at 120% 20%, rgba(147, 51, 234, 0.08) 0%, transparent 60%),
+      radial-gradient(600px 200px at -20% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 50%);
+    position: relative;
+  }
+  
+  /* Glass-like overlay on main content areas */
+  .glass-effect {
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
   }
   html {
     @apply font-sans;

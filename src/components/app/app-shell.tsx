@@ -45,7 +45,7 @@ export function AppShell({
     return (
       <div className="min-h-full">
         {/* Desktop sidebar */}
-        <aside className="hidden md:block fixed inset-y-0 left-0 z-40 w-56 flex-col border-r bg-sidebar px-3 py-4">
+        <aside className="hidden md:block fixed inset-y-0 left-0 z-40 w-56 flex-col border-r bg-sidebar px-3 py-4 backdrop-blur-xl bg-opacity-80">
           <TradeMark />
           <div className="mt-6">
             <NavLinks />
@@ -106,11 +106,11 @@ export function AppShell({
           collapsed ? "" : "md:pl-56"
         )}
       >
-        <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/70">
+        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-xl supports-backdrop-filter:bg-background/75">
           <div className="flex h-14 items-center gap-2 px-4 sm:gap-3 sm:px-6">
             <button
               onClick={() => setCollapsed((c) => !c)}
-              className="hidden items-center justify-center rounded-lg border border-border/60 bg-secondary/50 p-1.5 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground md:inline-flex"
+              className="hidden items-center justify-center rounded-lg border border-border/60 bg-secondary/50 p-1.5 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground md:inline-flex backdrop-blur-md"
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
