@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import { getSettings } from "@/lib/data";
 import {
   formatPnl,
-  formatPercent,
   formatPrice,
   formatR,
   formatRR,
@@ -436,6 +435,34 @@ function TradeLayout({
 
   const layoutTitle = side === "LONG" ? "📈 LONG" : "📉 SHORT";
 
+  const headlineInfo = (() => {
+    if (headline === "returnPct") {
+      return {
+        value: formatSignedPct(m.returnPct),
+        positive: (m.returnPct ?? 0) >= 0,
+      };
+    }
+    if (headline === "totalR") {
+      return {
+        value: formatR(m.totalR),
+        positive: m.totalR >= 0,
+      };
+    }
+    return {
+      value: formatPnl(m.totalPnl, currency),
+      positive: positivePnl,
+    };
+  })();
+
+  const headlineVisible = enabled[headline];
+  const footerText =
+    trade.result === "WIN"
+      ? "WINNER"
+      : trade.result === "LOSS"
+        ? "LOSER"
+        : "BREAKEVEN";
+  const footerPositive = trade.result === "WIN";
+
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden">
       <ShareBackdrop positive={positivePnl} />
@@ -475,80 +502,26 @@ function TradeLayout({
               <ShareBrandBadge logoUrl={trade.account?.logo} alt={accountName ?? "Prop firm"} />
             </div>
 
-            {/* Metric grid */}
-            <div
-              className={cn(
-                "mt-4 grid gap-3",
-                landscape ? "grid-cols-4" : "grid-cols-2"
-              )}
-            >
-              {enabled.returnPct && (
-                <MetricTile
-                  label="Return %"
-                  value={formatSignedPct(m.returnPct)}
-                  positive={(m.returnPct ?? 0) >= 0}
-                  large={landscape}
-                />
-              )}
-              {enabled.totalR && (
-                <MetricTile
-                  label="Total R"
-                  value={formatR(m.totalR)}
-                  positive={m.totalR >= 0}
-                  large={landscape}
-                />
-              )}
-              {enabled.totalPnl && (
-                <MetricTile
-                  label="Net P&L"
-                  value={formatPnl(m.totalPnl, currency)}
-                  positive={positivePnl}
-                  large={landscape}
-                />
-              )}
-              {enabled.winRate && (
-                <MetricTile
-                  label="Win Rate"
-                  value={m.winRate == null ? "—" : formatPercent(m.winRate)}
-                  large={landscape}
-                />
-              )}
-              {enabled.profitFactor && (
-                <MetricTile
-                  label="Profit Factor"
-                  value={
-                    m.profitFactor === null
-                      ? m.totalR > 0
-                        ? "∞"
-                        : "—"
-                      : m.profitFactor.toFixed(2)
-                  }
-                  positive={m.profitFactor === null ? false : m.profitFactor > 0}
-                  large={landscape}
-                />
-              )}
-              {enabled.expectancyR && (
-                <MetricTile
-                  label="Avg R / Trade"
-                  value={formatR(m.expectancyR)}
-                  positive={(m.expectancyR ?? 0) >= 0}
-                  large={landscape}
-                />
-              )}
-              {enabled.tradeCount && (
-                <MetricTile
-                  label="Trades"
-                  value={`${m.tradeCount}`}
-                  large={landscape}
-                />
-              )}
-              {enabled.maxDrawdownR && (
-                <MetricTile
-                  label="Max Drawdown"
-                  value={m.maxDrawdownR == null ? "—" : formatR(-m.maxDrawdownR)}
-                  positive={false}
-                  large={landscape}
-                />
+            {/* Hero — WIN/LOSS headline */}
+            <div className="mt-6">
+              <div
+                className={cn(
+                  "text-base font-semibold uppercase tracking-[0.24em]",
+                  footerPositive ? "text-emerald-400" : "text-rose-400"
+                )}
+              >
+                {footerText}
+              </div>
+              {headlineVisible && (
+                <div
+                  className={cn(
+                    "mt-2 leading-none font-bold tabular-nums tracking-tight",
+                    landscape ? "text-[88px]" : "text-[96px]",
+                    headlineInfo.positive ? "text-emerald-400" : "text-rose-400"
+                  )}
+                >
+                  {headlineInfo.value}
+                </div>
               )}
             </div>
 
@@ -653,39 +626,6 @@ function InfoTile({
         className={cn(
           "mt-2 font-semibold tabular-nums text-slate-100",
           "text-2xl"
-        )}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function MetricTile({
-  label,
-  value,
-  positive,
-  large,
-}: {
-  label: string;
-  value: string;
-  positive?: boolean;
-  large?: boolean;
-}) {
-  return (
-    <div className="rounded-xl bg-white/[0.10] px-5 py-5 ring-1 ring-white/20 backdrop-blur-sm">
-      <div className="text-sm tracking-wide text-slate-300 uppercase">
-        {label}
-      </div>
-      <div
-        className={cn(
-          "mt-2 font-bold leading-tight tabular-nums",
-          large ? "text-4xl" : "text-3xl",
-          positive === undefined
-            ? "text-white"
-            : positive
-              ? "text-emerald-400"
-              : "text-rose-400"
         )}
       >
         {value}
